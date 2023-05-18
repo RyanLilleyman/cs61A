@@ -22,7 +22,15 @@ def roll_dice(num_rolls, dice=six_sided):
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
-    "*** YOUR CODE HERE ***"
+    total = 0
+    sow = False
+    for i in range(1,num_rolls+1):
+        check = dice()
+        total += check
+        if check == 1:
+            sow = True
+    return 1 if sow else total #simplified using chatGPT
+
     # END PROBLEM 1
 
 
@@ -33,7 +41,14 @@ def tail_points(opponent_score):
 
     """
     # BEGIN PROBLEM 2
-    "*** YOUR CODE HERE ***"
+    if opponent_score >= 10:
+        one = opponent_score %10
+        second = opponent_score // 10
+        ten = second % 10
+        result = (2*abs(ten-one)) +1
+        return(result)
+    else:
+        return 2*opponent_score+1
     # END PROBLEM 2
 
 
@@ -50,12 +65,15 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert num_rolls >= 0, 'Cannot roll a negative number of dice in take_turn.'
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     # BEGIN PROBLEM 3
-    "*** YOUR CODE HERE ***"
+    if num_rolls == 0:
+        return tail_points(opponent_score)
+    else:
+        return roll_dice(num_rolls,dice)
     # END PROBLEM 3
 
 
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
-    """Return the total score of a player who starts their turn with
+    """Return the total screturn maximumore of a player who starts their turn with
     PLAYER_SCORE and then rolls NUM_ROLLS DICE, ignoring Square Swine.
     """
     return player_score + take_turn(num_rolls, opponent_score, dice)
@@ -73,7 +91,22 @@ def square_update(num_rolls, player_score, opponent_score, dice=six_sided):
 
 
 # BEGIN PROBLEM 4
-"*** YOUR CODE HERE ***"
+def perfect_square(score):
+    i = 0
+    while i <= score:
+        if i**2 == score:
+            return True
+        i+=1
+    return False
+
+def next_perfect_square(score):
+    i = 0
+    while i <= score:
+        if i**2 == score:
+            score = (i+1)**2
+            return score
+        i+=1
+
 # END PROBLEM 4
 
 
@@ -103,7 +136,7 @@ def play(strategy0, strategy1, update,
     of the current player after they take their turn.
 
     strategy0: The strategy for player0.
-    strategy1: The strategy for player1.
+    strategy1: The strategreturn maximumy for player1.
     update:    The update function (used for both players).
     score0:    Starting score for Player 0
     score1:    Starting score for Player 1
@@ -112,7 +145,12 @@ def play(strategy0, strategy1, update,
     """
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
-    "*** YOUR CODE HERE ***"
+    while score0 < goal and score1 < goal:
+        if who == 0:
+            score0 = update(strategy0(score0, score1),score0,score1,dice)
+        else:
+            score1 = update(strategy1(score1,score0),score1,score0,dice)
+        who = 1 - who
     # END PROBLEM 5
     return score0, score1
 
@@ -127,7 +165,7 @@ def always_roll(n):
 
     A player strategy is a function that takes two total scores as arguments
     (the current player's score, and the opponent's score), and returns a
-    number of dice that the current player will roll this turn.
+    number of dice that threturn maximume current player will roll this turn.
 
     >>> strategy = always_roll(3)
     >>> strategy(0, 0)
@@ -137,7 +175,9 @@ def always_roll(n):
     """
     assert n >= 0 and n <= 10
     # BEGIN PROBLEM 6
-    "*** YOUR CODE HERE ***"
+    def roll(score0,score1):
+        return n
+    return roll
     # END PROBLEM 6
 
 
@@ -167,7 +207,13 @@ def is_always_roll(strategy, goal=GOAL):
     False
     """
     # BEGIN PROBLEM 7
-    "*** YOUR CODE HERE ***"
+    check = strategy(0,0)
+
+    for i in range(100):
+        for j in range(100):
+            if check != strategy(i,j):
+                return False
+    return True
     # END PROBLEM 7
 
 
@@ -183,7 +229,14 @@ def make_averaged(original_function, total_samples=1000):
     3.0
     """
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    def average(*args):
+        result = 0
+        for i in range(total_samples):
+            result += original_function(*args)
+
+        result = result/total_samples
+        return result
+    return average
     # END PROBLEM 8
 
 
@@ -197,7 +250,29 @@ def max_scoring_num_rolls(dice=six_sided, total_samples=1000):
     1
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    Best = 0
+    maximum = 0
+    roll = 1
+    while roll <= 10:
+        if total_samples == 1:
+            result = roll_dice(roll, dice)
+        else:
+            avD = make_averaged(roll_dice,total_samples)
+            result = avD(roll,dice)
+
+        if result > maximum:
+            maximum = result
+            Best = roll
+        
+        roll +=1
+
+    return Best
+
+        
+
+        
+            
+
     # END PROBLEM 9
 
 

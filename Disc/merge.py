@@ -8,4 +8,4 @@ def merge(n1, n2):
     else:
         return merge(n1, n2 // 10) * 10 + n2 % 10
     
-print(merge(21,53))
+print(merge(987,53))
